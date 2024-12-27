@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form method="POST" action="/start-session">
+        <label for="date">Date:</label>
+        <input type="date" id="date" name="date" required>
+    
+        <label for="start_time">Start Time:</label>
+        <input type="time" id="start_time" name="start_time" required>
+    
+        <label for="end_time">End Time:</label>
+        <input type="time" id="end_time" name="end_time" required>
+    
+        <button type="submit">Add Session</button>
+    </form>    
+</body>
+</html>

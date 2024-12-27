@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Institution Dashboard</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/styles.css') }}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.socket.io/4.5.1/socket.io.min.js"></script>
+    <!-- Socket.IO script -->
+  </head>
+  <body>
+    <div class="header">
+      <h1>Session control</h1>
+      <div class="dummy">
+        <div class="start-session">
+          <button onclick="startNewSession()">Start New Session</button>
+        </div>
+        <a href="/logout" class="logout">Logout</a>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <h3 class="overall">Overall Engagement Score</h3>
+      <p id="overall-score" class="engagement-score">Loading...</p>
+
+      <h2 class="engage">Slot Engagement Score</h2>
+
+      <div class="main-content">
+        <!-- Last Engagement Score Pie Chart -->
+        <div id="last-engagement">
+          <canvas id="lastEngagementChart"></canvas>
+        </div>
+
+        <!-- Session History Bar Chart -->
+        <div id="chart-container">
+          <canvas id="engagementChart"></canvas>
+        </div>
+      </div>
+
+      <div id="reports-container">
+        <h4 id="analysis-summary">Loading...</h4>
+        <div id="analysis-report">
+        </div>
+      </div>
+
+      <h3>Session History</h3>
+      <div class="session-history">
+        <div id="slot-list">
+          <!-- Dynamic slots will be added here -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Fetch engagement data from the backend
+      fetch("../static/engagement_scores.json")
+        .then((response) => response.json())
+        .then((data) => {
+          const engagementData = data;
+
+          // Process session data for chart and list
+          const sessionLabels = engagementData.map((item) => item.session);
+          const engagementScores = engagementData.map((item) => item.score);
+
+          // Display the last engagement score in a pie chart
+          updateLastEngagementChart(
+            engagementScores[engagementScores.length - 1]
+          );
+
+          // Update the overall score and display session history
+          updateSessionHistory(engagementData);
+          updateOverallScore(engagementScores);
+
+          // Update the main engagement chart
+          updateEngagementChart(sessionLabels, engagementScores);
+        })
+        .catch((error) => {
+          console.error("Error fetching engagement data:", error);
+          alert("Failed to load engagement data");
+        });
+
+      // Fetch the classroom analysis report (JSON) from the backend
+      fetch(
+        `/static/classroom_analysis_report.json?timestamp=${new Date().getTime()}`
+      )
+        .then((response) => response.json())
+        .then((data) => {
+          // Extract and display the "content" field from the JSON
+          const analysisReport = document.getElementById("analysis-report");
+          const summary = document.getElementById("analysis-summary");
+
+          // Safeguard against unexpected data structures
+          try {
+            // Navigate the JSON to access "content"
+            const content = data.choices[0].message.content;
+
+            // Update the report section with the extracted content
+            summary.innerHTML = "Classroom Analysis Report:";
+            analysisReport.innerHTML = `<p>${content}</p>`;
+          } catch (error) {
+            console.error(
+              "Error parsing content from analysis report JSON:",
+              error
+            );
+            summary.innerHTML = "No analysis report available.";
+            analysisReport.innerHTML =
+              "Unable to load or process the classroom analysis data.";
+          }
+        })
+        .catch((error) => {
+          console.error("Error fetching the analysis report:", error);
+          alert("Failed to load classroom analysis report.");
+        });
+
+      // Function to update the pie chart for the last session's engagement score
+      function updateLastEngagementChart(lastScore) {
+        const ctx = document
+          .getElementById("lastEngagementChart")
+          .getContext("2d");
+        new Chart(ctx, {
+          type: "pie",
+          data: {
+            labels: ["Engagement", "Remaining"],
+            datasets: [
+              {
+                data: [lastScore, 100 - lastScore],
+                backgroundColor: [
+                  "#1E3A8A",
+                  "rgba(200, 200, 200, 0.3)",
+                ],
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "top",
+              },
+              tooltip: {
+                callbacks: {
+                  label: function (tooltipItem) {
+                    return tooltipItem.raw.toFixed(2) + "%";
+                  },
+                },
+              },
+            },
+          },
+        });
+      }
+
+      // Function to update the session history chart
+      function updateEngagementChart(labels, scores) {
+        const ctx = document.getElementById("engagementChart").getContext("2d");
+        new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels: labels,
+            datasets: [
+              {
+                label: "Engagement Score (%)",
+                data: scores,
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                borderColor: "rgba(75, 192, 192, 1)",
+                borderWidth: 1,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                ticks: { stepSize: 10 },
+              },
+            },
+          },
+        });
+      }
+
+      // Function to update session history on the page
+      function updateSessionHistory(engagementData) {
+        const slotList = document.getElementById("slot-list");
+        slotList.innerHTML = ""; // Clear previous sessions
+
+        engagementData.forEach((slot) => {
+          const listItem = document.createElement("div");
+          listItem.classList.add("slot-item");
+          listItem.innerHTML = `
+                    <span> ${slot.session} | Score: <span class="score">${slot.score.toFixed(2)}</span>%</span>
+                `;
+          slotList.appendChild(listItem);
+        });
+      }
+
+      // Function to calculate and display the overall engagement score
+      function updateOverallScore(scores) {
+        const overallScore =
+          scores.reduce((sum, score) => sum + score, 0) / scores.length;
+        document.getElementById(
+          "overall-score"
+        ).textContent = `${overallScore.toFixed(2)}%`;
+      }
+
+      // Start session function
+      function startNewSession() {
+        alert("Starting a new session...");
+        // Redirect to session start (replace URL as needed)
+        window.location.href = "/start-session";
+      }
+    </script>
+  </body>
+</html>

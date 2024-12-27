@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login Page</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      .Login-container {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        flex-direction: row;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      .right-container {
+        width: 45vw;
+        height: 100%;
+        background-image: url("./images/pexels-kwakugriffn-14554004.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        margin: 0;
+        padding: 0;
+      }
+
+      .left-container {
+        background: linear-gradient(to right, #f3f9fd, #fef6e4);
+        width: 55vw;
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .box-container {
+        width: 27vw;
+        height: 65vh;
+        background-color: rgb(255, 255, 255);
+        border-radius: 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .sign-up {
+        color: #3f72af;
+        font-family: "Lilita One", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        text-align: center;
+        padding-bottom: 50px;
+      }
+
+      .tag-collection {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        flex-direction: column;
+      }
+
+      .input-group {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+
+      .input-group label {
+        display: block;
+        font-size: 14px;
+        font-family: "Bree Serif", serif;
+        margin-bottom: 5px;
+        color: #555;
+      }
+
+      .input-group input {
+        width: 100%;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 19px;
+      }
+
+      .btn {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 15px;
+        margin: 1vw;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      .btn:hover {
+        background-color: #0056b3;
+      }
+
+      @media (max-width: 1200px) {
+        .Login-container {
+          flex-direction: column;
+        }
+
+        .right-container {
+          width: 100vw;
+          height: 45vh;
+          order: -1;
+        }
+
+        .left-container {
+          width: 100vw;
+          height: 50vh;
+        }
+
+        .box-container {
+          width: 50vw;
+          height: 50vh;
+        }
+      }
+
+      @media (max-width: 1024px) {
+        .right-container {
+          height: 45vh;
+        }
+
+        .box-container {
+          width: 70vw;
+          height: 45vh;
+        }
+      }
+
+      @media (max-width: 768px) {
+        .right-container {
+          height: 40vh;
+        }
+
+        .left-container {
+          height: 60vh;
+        }
+
+        .box-container {
+          width: 80vw;
+          height: 40vh;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .right-container {
+          height: 40vh;
+        }
+
+        .box-container {
+          width: 80vw;
+          height: 40vh;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .right-container {
+          height: 40vh;
+        }
+
+        .box-container {
+          width: 90vw;
+          height: 45vh;
+        }
+
+        .box-container {
+          border-radius: 10px;
+        }
+      }
+
+      @media (max-width: 360px) {
+        .right-container {
+          height: 40vh;
+        }
+
+        .box-container {
+          width: 95vw;
+          height: 50vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="Login-container">
+      <div class="left-container">
+        <div class="box-container">
+          <h1 class="sign-up">Login</h1>
+          <form class="tag-collection" action="/" method="POST">
+            <div class="input-group">
+              <label for="username">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter your username"
+                required
+              />
+            </div>
+            <div class="input-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+            <button type="submit" class="btn">Login</button>
+          </form>
+        </div>
+      </div>
+
+      <div
+        class="right-container"
+        style="background-image: url('{{ url_for('static', filename='../static/images/pexels-kwakugriffn-14554004.jpg') }}');"
+      ></div>
+    </div>
+  </body>
+</html>
